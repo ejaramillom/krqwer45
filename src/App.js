@@ -11,8 +11,48 @@ class App extends Component {
         { id: 2, name: "Hacer la cama", done: true },
         { id: 3, name: "Leer un rato", done: false }
       ],
-      newTask: ''
+      newTask: '',
+      error: '',
+      done: false
     }
+    this.addTask = this.addTask.bind(this)
+    this.updateTask = this.updateTask.bind(this)
+    this.getInitialState = this.getInitialState.bind(this)
+    this.toggleClass= this.toggleClass.bind(this)
+  }
+  toggleClass() {
+        const currentState = this.state.done;
+        this.setState({ done: !currentState });
+    };
+  getInitialState(){
+    return {
+      error:''
+    }
+  }
+  addTask(event) {
+    (this.state.newTask === "") ?
+      this.setState({
+        error: 'error'
+      })  :
+      this.setState({
+        error: 'input'
+      })
+    event.preventDefault()
+    const oldTasks = this.state.tasks
+    const newTask = {
+      id: Date.now(),
+      name: this.state.newTask,
+      done: false
+    }
+   this.setState({
+      tasks: [...oldTasks, newTask],
+      newTask: ''
+    })
+  }
+  updateTask(event) {
+    this.setState({
+      newTask: event.target.value
+    })
   }
   render() {
     return (
@@ -20,10 +60,10 @@ class App extends Component {
         <div className="list">
           <h3>Por hacer:</h3>
           <ul className="todo">
-            {this.state.tasks.map((task, index) => <li key={task.id}>{task.name}</li>)}
+            {this.state.tasks.map((task) => <li key={task.id} done={task.done} onClick={this.toggleClass} className={this.state.done ? 'done': null} >{task.name}</li>)}
           </ul>
-          <form>
-            <input type="text" id="new-task" placeholder="Ingresa una tarea y oprime Enter" value={this.state.newTask} />
+          <form onSubmit={this.addTask}>
+            <input className={this.state.error} type="text" id="new-task" placeholder="Ingresa una tarea y oprime Enter" value={this.state.newTask} onChange={this.updateTask}/>
           </form>
         </div>
       </div>
